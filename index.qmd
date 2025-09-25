@@ -1,14 +1,8 @@
 ---
-title: "xnonaka.github.io"
-image: downloads/IMG_1062.jpeg
+title: "Xander Nonaka"
+image: "media/IMG_1062.jpeg"
+about:
+  template: trestles
 ---
 
-Home
-
-```{r}
-1 + 1
-```
-
-```{r}
-
-```
+Hi! My name is Xander, I'm a senior at Pomona College from San Francisco, CA. I spent most of my childhood in SF, but also lived in Tokyo, Japan for five years. The photo here is one I took of the redwood trees at Muir Woods, north of San Francisco. Exploring California's natural features sparked my interest in the environment, which motivated me to study environmental policy at Pomona. I'm also passionate about sports and music, and spend my time watching Bay Area sports and taking music lessons.

@@ -4,10 +4,15 @@ project:
 website:
   title: "xnonaka.github.io"
   navbar:
-    left:
-      - href: index.qmd
-        text: Home
-      - about.qmd
+    right:
+      - text: "About Me"
+        href: about.qmd
+      - text: "Data Viz"
+        menu:
+        - text: "Water Insecurity"
+          href: waterinsecurity.qmd
+        - text: "Highway Traffic"
+          href: traffic.qmd
 
 format:
   html:

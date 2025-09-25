@@ -1,0 +1,84 @@
+---
+title: "Water Insecurity in the US (2023)"
+description: "Analysis of US county plumbing data from TidyTuesday"
+author: Xander Nonaka
+date: September 24, 2025 
+format: html
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r}
+library(tidyverse)
+library(dplyr)
+```
+
+Water Insecurity in US Counties 
+
+This dataset contains the percentage of people lacking plumbing in US counties. To create a simpler plot, I took the mean percentages across each state's counties, and displayed that value (each point is a state). 
+
+```{r}
+tuesdata <- tidytuesdayR::tt_load('2025-01-28')
+## OR
+tuesdata <- tidytuesdayR::tt_load(2025, week = 4)
+
+water_insecurity_2022 <- tuesdata$water_insecurity_2022
+water_insecurity_2023 <- tuesdata$water_insecurity_2023
+```
+
+```{r}
+west <- c("Arizona","Colorado","Idaho","Montana","Nevada","New Mexico","Utah","Wyoming",
+               "Alaska","California","Hawaii","Oregon","Washington")
+northeast <- c("Connecticut","Maine","Massachusetts","New Hampshire","Rhode Island","Vermont","New Jersey","New York","Pennsylvania")
+midwest <- c("Illinois","Indiana","Michigan","Ohio","Wisconsin","Iowa","Kansas","Minnesota","Missouri","Nebraska","North Dakota","South Dakota")
+south <- c("Delaware","Florida","Georgia","Maryland","North Carolina","South Carolina","Virginia","District of Columbia","West Virginia", 
+               "Alabama","Kentucky","Mississippi","Tennessee","Arkansas","Louisiana","Oklahoma","Texas","Puerto Rico")
+```
+
+```{r}
+water_insecurity_2022 <- mutate(water_insecurity_2022,
+    state = sub(".*,\\s*(.*)", "\\1", name) 
+  )
+water_insecurity_2022 <-  mutate(water_insecurity_2022,
+    region = case_when(
+      state %in% northeast ~ "Northeast",
+      state %in% midwest ~ "Midwest",
+      state %in% south ~ "South",
+      state %in% west ~ "West",
+      TRUE ~ NA_character_))
+
+water_insecurity_2023 <- mutate(water_insecurity_2023,
+    state = sub(".*,\\s*(.*)", "\\1", name) 
+  )
+water_insecurity_2023 <-  mutate(water_insecurity_2023,
+    region = case_when(
+      state %in% northeast ~ "Northeast",
+      state %in% midwest ~ "Midwest",
+      state %in% south ~ "South",
+      state %in% west ~ "West",
+      TRUE ~ NA_character_))
+```
+
+
+```{r}
+state_avg23 <-water_insecurity_2023 %>% 
+  group_by(state, region) %>% 
+  summarize(avg_perc = mean(percent_lacking_plumbing, na.rm=TRUE)) 
+ 
+ggplot(state_avg23,
+  aes(x=region, 
+      y=avg_perc, 
+      color = region)) +
+geom_jitter(width=.2, size=3, alpha=.7, show.legend = FALSE) +
+labs(x="Region",
+     y="Percentage Lacking Plumbing (State Mean)",
+     title="Percentage Lacking Plumbing 2023 "
+)
+```
+This graph plots the mean percentage of population lacking plumbing for each state across its counties. The states are grouped into the U.S. census regions (with Puerto Rico added to the South region), to compare mean county percentages in each region. 
+
+Source: 
+https://github.com/rfordatascience/tidytuesday/tree/main/data/2025/2025-01-28
+USGS - https://waterdata.usgs.gov/blog/acs-maps/

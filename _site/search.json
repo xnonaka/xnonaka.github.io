@@ -1,5 +1,12 @@
 [
   {
+    "objectID": "waterinsecurity.html",
+    "href": "waterinsecurity.html",
+    "title": "Water Insecurity in the US (2023)",
+    "section": "",
+    "text": "Water Insecurity in US Counties\nThis dataset contains the percentage of people lacking plumbing in US counties. To create a simpler plot, I took the mean percentages across each state’s counties, and displayed that value (each point is a state).\n\n\n\n\n\n\n\n\n\nThis graph plots the mean percentage of population lacking plumbing for each state across its counties. The states are grouped into the U.S. census regions (with Puerto Rico added to the South region), to compare mean county percentages in each region.\nSource: https://github.com/rfordatascience/tidytuesday/tree/main/data/2025/2025-01-28 USGS - https://waterdata.usgs.gov/blog/acs-maps/"
+  },
+  {
     "objectID": "about.html",
     "href": "about.html",
     "title": "About",
@@ -9,8 +16,15 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "xnonaka.github.io",
+    "title": "Xander Nonaka",
     "section": "",
-    "text": "Home\n\n1 + 1\n\n[1] 2"
+    "text": "Hi! My name is Xander, I’m a senior at Pomona College from San Francisco, CA. I spent most of my childhood in SF, but also lived in Tokyo, Japan for five years. The photo here is one I took of the redwood trees at Muir Woods, north of San Francisco. Exploring California’s natural features sparked my interest in the environment, which motivated me to study environmental policy at Pomona. I’m also passionate about sports and music, and spend my time watching Bay Area sports and taking music lessons."
+  },
+  {
+    "objectID": "traffic.html",
+    "href": "traffic.html",
+    "title": "Daily England Traffic",
+    "section": "",
+    "text": "England National Highways Traffic Data Set\nThe data set used in this plot contains speed and vehicle volume data captured throughout the day over the course of many days on different highway sites in England.\n\n\n\n\n\n\n\n\n\nAverage speed across all highway sites is measured relative to the time of day the data was captured. Time is displayed here as a series of interval numbers from 0 to 95. 0 represents the first period of data on a new day, and 95 represents the last. Thus noon is around the 47th interval.\nSource: https://github.com/rfordatascience/tidytuesday/blob/main/data/2024/2024-12-03/readme.md National Highways - https://webtris.nationalhighways.co.uk/api/swagger/ui/index"
   }
 ]

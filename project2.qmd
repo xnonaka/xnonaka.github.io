@@ -1,0 +1,200 @@
+---
+title: "Analyses of Text from Shakespeare's Plays"
+author: Xander Nonaka
+date: October 8, 2025 
+format: html 
+execute: 
+  echo: false
+  warning: false
+  message: false
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+tuesdata <- tidytuesdayR::tt_load(2024, week = 38)
+
+hamlet <- tuesdata$hamlet
+macbeth <- tuesdata$macbeth
+romeo_juliet <- tuesdata$romeo_juliet
+```
+
+```{r}
+hamlet_words <- hamlet %>% 
+  mutate(
+    light_words = str_count(dialogue, "\\b(light|sun|day)\\b"),
+    dark_words = str_count(dialogue, "\\b(dark|black|night)\\b")
+  ) %>% 
+  summarize(
+    light = sum(light_words),
+    dark = sum(dark_words)
+  )
+
+macbeth_words <- macbeth %>% 
+  mutate(
+    light_words = str_count(dialogue, "\\b(light|sun|day)\\b"),
+    dark_words = str_count(dialogue, "\\b(dark|black|night)\\b")
+  ) %>% 
+  summarize(
+    light = sum(light_words),
+    dark = sum(dark_words)
+  )
+
+romeo_juliet_words <- romeo_juliet %>% 
+  mutate(
+    light_words = str_count(dialogue, "\\b(light|sun|day)\\b"),
+    dark_words = str_count(dialogue, "\\b(dark|black|night)\\b")
+  ) %>% 
+  summarize(
+    light = sum(light_words),
+    dark = sum(dark_words)
+  )
+```
+
+```{r}
+light_dark_words <- data_frame(play = c("Hamlet", "Macbeth", "Romeo and Juliet"), 
+                               light = c(hamlet_words$light, macbeth_words$light, romeo_juliet_words$light), 
+                               dark = c(hamlet_words$dark, macbeth_words$dark, romeo_juliet_words$dark))
+light_dark_words <- pivot_longer(light_dark_words, cols=c(light, dark), names_to="word type", values_to="count")
+```
+
+```{r}
+ggplot(light_dark_words, aes(
+  x=play, 
+  y=count, 
+  fill=`word type`
+)) +
+  geom_col() +
+  labs(x="Play",
+       y="Word Count")
+```
+Each word type contains three words (dark has "dark", "black", and "night", and light has "light", "sun", and "day"). These are very limited categories for such broad themes, but how often these word types occur in each play. Romeo and Juliet twice as many of these words as the other two plays (even though Hamlet has the most words total). This may reflect the kinds of imagery used in Romeo and Juliet, in which the light and dark types are split about evenly. Hamlet and Macbeth have slightly more dark words, which may illustrate the darker settings/vibes of these plays (even though they are all tragedies). 
+
+```{r}
+words_following_I <- hamlet %>%
+  mutate(
+    following_I = str_extract(dialogue,"(?<=\\bI\\s)\\w+")
+  )
+  
+words_following_I
+```
+
+```{r}
+I_words <- words_following_I %>% 
+  filter(!is.na(following_I)) %>% 
+  group_by(following_I) %>% 
+  summarize(count = n()) %>% 
+  arrange(desc(count))
+
+
+head(I_words, 20)
+```
+This table shows the most common words following "I" in Hamlet. My goal was to idenfity the most common verbs from the play, and see if any uncommon or unexpected ones occur often. Shakespeare obviously used many words that are not widely used or understood anymore, but all of the most common verbs were very standard to today's English. One drawback from my code is I was only able to extract the words following the first "I" in a single line (so if I was used twice, it didn't extract the next word to add to the count).  
+
+```{r}
+opposite_words_romeo_juliet <- romeo_juliet %>% 
+  mutate(
+    w_love = str_detect(dialogue, "\\blove\\b"),
+    w_hate = str_detect(dialogue, "\\bhate\\b"),
+    w_life = str_detect(dialogue, "\\blife\\b"),
+    w_death = str_detect(dialogue, "\\bdeath\\b"),
+    w_heaven = str_detect(dialogue, "\\bheaven\\b"), 
+    w_hell = str_detect(dialogue, "\\bhell\\b")
+  ) 
+sum_words_romeo_juliet <-opposite_words_romeo_juliet %>% 
+  summarize(
+    love = sum(w_love), 
+    hate = sum(w_hate), 
+    life = sum(w_life), 
+    death = sum(w_death), 
+    heaven = sum(w_heaven),
+    hell = sum(w_hell)
+  )
+
+opposite_words_hamlet <- hamlet %>% 
+  mutate(
+    w_love = str_detect(dialogue, "\\blove\\b"),
+    w_hate = str_detect(dialogue, "\\bhate\\b"),
+    w_life = str_detect(dialogue, "\\blife\\b"),
+    w_death = str_detect(dialogue, "\\bdeath\\b"),
+    w_heaven = str_detect(dialogue, "\\bheaven\\b"), 
+    w_hell = str_detect(dialogue, "\\bhell\\b")
+  ) 
+sum_words_hamlet <-opposite_words_hamlet %>% 
+  summarize(
+    love = sum(w_love), 
+    hate = sum(w_hate), 
+    life = sum(w_life), 
+    death = sum(w_death), 
+    heaven = sum(w_heaven),
+    hell = sum(w_hell)
+  )
+
+opposite_words_macbeth <- macbeth %>% 
+  mutate(
+    w_love = str_detect(dialogue, "\\blove\\b"),
+    w_hate = str_detect(dialogue, "\\bhate\\b"),
+    w_life = str_detect(dialogue, "\\blife\\b"),
+    w_death = str_detect(dialogue, "\\bdeath\\b"),
+    w_heaven = str_detect(dialogue, "\\bheaven\\b"), 
+    w_hell = str_detect(dialogue, "\\bhell\\b")
+  ) 
+sum_words_macbeth <-opposite_words_macbeth %>% 
+  summarize(
+    love = sum(w_love), 
+    hate = sum(w_hate), 
+    life = sum(w_life), 
+    death = sum(w_death), 
+    heaven = sum(w_heaven),
+    hell = sum(w_hell)
+  )
+```
+
+```{r}
+romeo_juliet_df <-pivot_longer(sum_words_romeo_juliet, cols=everything(), names_to = "word", values_to = "count")
+hamlet_df <- pivot_longer(sum_words_hamlet, cols=everything(), names_to = "word", values_to = "count")
+macbeth_df <- pivot_longer(sum_words_macbeth, cols=everything(), names_to = "word", values_to = "count")
+```
+```{r}
+romeo_juliet_df$word <- factor(romeo_juliet_df$word, levels = c("love", "hate", "life", "death", "heaven", "hell"))
+hamlet_df$word <- factor(hamlet_df$word, levels = c("love", "hate", "life", "death", "heaven", "hell"))
+macbeth_df$word <- factor(macbeth_df$word, levels = c("love", "hate", "life", "death", "heaven", "hell"))
+
+```
+
+
+```{r}
+ggplot(romeo_juliet_df, aes(x=word, y=count)) + 
+  geom_col() +
+  labs(x="Word", 
+       y="Count",
+       title="Word counts in Romeo and Juliet")
+```
+```{r}
+ggplot(hamlet_df, aes(x=word, y=count)) + 
+  geom_col() +
+  labs(x="Word", 
+       y="Count",
+       title="Word counts in Hamlet")
+```
+```{r}
+ggplot(macbeth_df, aes(x=word, y=count)) + 
+  geom_col() +
+  labs(x="Word", 
+       y="Count",
+       title="Word counts in Macbeth")
+```
+I wanted to expand on the first plot's theme of opposite word frequency. I identified three word pairs to count using the detect function, and plotted the distribution for all three plays. The highest total for any word is "love" in Romeo and Juliet, which makes sense. The play also favors "death" to "life" much more heavily than the other two plays. Life and death are split equally in Macbeth (and both slightly higher than "love"). "Hate" doesn't seem to be as common a word for Shakespeare. 
+
+Source: 
+TidyTuesday: https://github.com/rfordatascience/tidytuesday/blob/main/data/2024/2024-09-17/readme.md
+
+Data: 
+MIT, "The Complete Works of William Shakespeare"
+https://shakespeare.mit.edu/
+
+William Shakespeare, "Hamlet"
+Shakespeare, "Macbeth" 
+Shakespeare, "Romeo and Juliet" 

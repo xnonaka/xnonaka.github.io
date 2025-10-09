@@ -14,6 +14,8 @@ website:
           href: waterinsecurity.qmd
         - text: "Highway Traffic"
           href: traffic.qmd
+        - text: "Shakespeare Text"
+          href: project2.qmd
 
 format:
   html:

@@ -10,12 +10,12 @@ website:
         href: about.qmd
       - text: "Data Viz"
         menu:
-        - text: "Water Insecurity"
-          href: waterinsecurity.qmd
-        - text: "Highway Traffic"
-          href: traffic.qmd
-        - text: "Shakespeare Text"
-          href: project2.qmd
+          - text: "Water Insecurity"
+            href: waterinsecurity.qmd
+          - text: "Highway Traffic"
+            href: traffic.qmd
+          - text: "Shakespeare Text"
+            href: project2.qmd
 
 format:
   html:

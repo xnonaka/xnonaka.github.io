@@ -78,7 +78,7 @@ words_following_I <- hamlet %>%
     following_I = str_extract(dialogue,"(?<=\\bI\\s)\\w+")
   )
   
-words_following_I
+#words_following_I
 ```
 
 ```{r}

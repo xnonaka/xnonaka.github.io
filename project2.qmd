@@ -2,18 +2,19 @@
 title: "Analyses of Text from Shakespeare's Plays"
 author: Xander Nonaka
 date: October 8, 2025 
-format: html 
+format: 
+  html:
+    code-fold: TRUE
 execute: 
-  echo: false
   warning: false
   message: false
 ---
 
-```{r}
+```{r, echo=FALSE} 
 library(tidyverse)
 ```
 
-```{r}
+```{r, echo=FALSE}
 tuesdata <- tidytuesdayR::tt_load(2024, week = 38)
 
 hamlet <- tuesdata$hamlet
@@ -188,13 +189,18 @@ ggplot(macbeth_df, aes(x=word, y=count)) +
 ```
 I wanted to expand on the first plot's theme of opposite word frequency. I identified three word pairs to count using the detect function, and plotted the distribution for all three plays. The highest total for any word is "love" in Romeo and Juliet, which makes sense. The play also favors "death" to "life" much more heavily than the other two plays. Life and death are split equally in Macbeth (and both slightly higher than "love"). "Hate" doesn't seem to be as common a word for Shakespeare. 
 
-Source: 
+Sources: 
 TidyTuesday: https://github.com/rfordatascience/tidytuesday/blob/main/data/2024/2024-09-17/readme.md
 
 Data: 
-MIT, "The Complete Works of William Shakespeare"
+Massachussetts Institute of Technology, "The Complete Works of William Shakespeare"
 https://shakespeare.mit.edu/
 
-William Shakespeare, "Hamlet"
-Shakespeare, "Macbeth" 
+Shakespeare, "Hamlet"
+https://shakespeare.mit.edu/hamlet/
+
+Shakespeare, "Macbeth"
+https://shakespeare.mit.edu/macbeth/
+
 Shakespeare, "Romeo and Juliet" 
+https://shakespeare.mit.edu/romeo_juliet/

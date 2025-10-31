@@ -16,6 +16,8 @@ website:
             href: traffic.qmd
           - text: "Shakespeare Text"
             href: project2.qmd
+          - text: "Penguin Permutation"
+            href: project3.qmd
 
 format:
   html:

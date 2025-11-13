@@ -18,6 +18,8 @@ website:
             href: project2.qmd
           - text: "Penguin Permutation"
             href: project3.qmd
+          - text: "Data Ethics"
+            href: project4.qmd
 
 format:
   html:

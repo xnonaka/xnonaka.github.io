@@ -1,0 +1,32 @@
+---
+title: "Target's Data Analysis of Pregnancy"
+author: "Xander Nonaka"
+---
+
+In his 2012 article "How Companies Learn Your Secrets", NYT writer Charles Duhigg detailed how Target used/uses purchasing data linked to consumer profiles to enhance its marketing techniques. Duhigg referenced a study that found purchases become a rigid habit for consumers, without active decision-making over time. A major life shift, however, can make purchasing habits more flexible in ways that retailers can take advantage of to establish new purchasing habits. In 2002, Target hired statistician Andrew Pole to analyze customers' purchasing habits. In conversation with Duhigg, Pole explained how he was tasked with developing a model that could predict the likelihood that a customer was pregnant (or preparing to be) based on their purchases. Target assigns each customer a unique ID number linked to their name, credit card, or email address. Each ID holds all the items that person purchased, along with other demographic information Target has gathered (or bought from other sources). Purchasing patterns are collected in accordance with Target's privacy policy, which indicates that all of a consumer's "commercial information" may be gathered. This data is collected both in-store and through Target's website and mobile app.
+
+Pole began gathering data from Target's baby shower registries, product lists that are publicly available. He tested the data and found that pregnant women tend to buy certain products, such as unscented lotions and soap, specific supplements, and cotton balls. Pole gathered 25 products that could be analyzed together to produce a "pregnancy prediction" score. Additionally, the women using the registry could enter their due date, so Pole was able to match certain products with certain stages of pregnancy. Thus, the purchased/requested products used to generate a pregnancy likelihood could also be used to estimate that woman's due date. This program was applied to all women who regularly shopped at Target. By tracking those who were likely pregnant, Target could direct advertisements and coupons for baby products, build purchasing habits that would last. From the consumer perspective, there are clear concerns about this marketing practice. Target analyzed women's purchasing behaviors to make inferences about their personal lives. This analysis was done without the represented individuals’ knowledge to target them for marketing. Regardless of its purpose, using retail data to infer pregnancy and act on those assumptions raises clear ethical concerns. 
+
+**Consent Structure**
+
+Consent is a crucial part of protecting the safety and privacy of the people represented by the data. There is no formal consent structure for customers. It is expected that purchasing products at a retailer provides data (what you purchased) linked to an identifier you willingly provide (i.e., credit card or email). The women who were assessed by the pregnancy predictor model did not know that their commercial information would be used in this specific way. Target's privacy policy declares that this information can be used for "targeted advertising" and research. Beyond this, informed consent for the pregnancy model would not be possible without a direct interaction with each woman who buys something from Target. Thus, giving informed consent to have your purchasing data used in this specific way would be challenging. 
+
+**Identifiable Data**
+
+For Target’s process, purchasing must be matched with the corresponding customer ID. The goal of analyzing the commercial data is to determine the likelihood of pregnancy and send targeted advertisements. The data is not publicly available, but for Target’s purposes, all of it is identifiable. If a woman buys a certain product, it will be used to predict pregnancy, a result that is matched with her ID indefinitely. 
+
+**Respect for Privacy**
+
+Although the data is not public, respect for privacy remains questionable. The data itself (what you purchase) is not private, but a customer’s use of purchased products in her personal life should be private. The goal of the predictor model is to make estimates about a woman’s personal life. While the data gathering itself does not infringe on privacy, the model it is used for does so. Sending advertisements based on the outcomes is a key piece of this. Duhigg described one example of a father who was upset his daughter received ads for baby products, only to find out she was pregnant. The ads and coupons represent Target’s assumption/estimate of pregnancy, and regardless of their accuracy, they may have unintended consequences for the woman receiving them. Thus, there are very significant privacy issues with not just Target’s data analysis, but also the resulting targeted marketing strategies. 
+
+**Ethical implications and Impact on Individuals**
+
+The unintended consequences on privacy are clear ethical implications that are not significant in Target’s marketing strategy. Target collected and used the data without consideration for the individuals. After some pushback, the targeted ads were diluted with other ads unrelated to pregnancy or child care. This ended up boosting the likelihood that the coupons for baby products would be used. If a woman “believes she hasn’t been spied on, she’ll use the coupons,” said Pole. Clearly, the targeted ads were not received well, which highlights the personal and emotional impact on the women whose personal lives were estimated without their knowledge. 
+
+The shift in advertising represents the clear, profit-oriented goal of Target’s study. The impact was considered only insofar as it affected customer habits. The goal of the analysis was to manipulate these habits. While the data collection does not violate customer privacy, the potential implications of estimating pregnancy were not considered.  
+
+Sources 
+
+Duhigg, Charles. “How Companies Learn Your Secrets.” The New York Times, Feb. 16, 2012, https://www.nytimes.com/2012/02/19/magazine/shopping-habits.html?unlocked_article_code=1.6U4.nLSt.-yehBjKHEmPW&smid=url-share 
+
+Target. “Target Privacy Policy.” https://www.target.com/c/target-privacy-policy/-/N-4sr7p

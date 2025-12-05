@@ -22,6 +22,8 @@ website:
             href: project4.qmd
           - text: "Traffic Stop Data"
             href: project5.qmd
+          - text: "Final Presentation"
+            href: DSPres.qmd
 
 format:
   html:

@@ -1,0 +1,204 @@
+---
+title: "Water Insecurity in the US"
+author: "Xander Nonaka"
+subtitle: "12/5/2025"
+format:
+  revealjs:
+    scrollable: true
+    slide-number: true
+    show-slide-number: all
+    embed-resources: true
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+## Data
+
+Tidy Tuesday Water Insecurity Data - Observation at county level
+measured by percent of households lacking plumbing
+
+```{r, echo = FALSE}
+library(tidyverse)
+library(dplyr)
+library(ggplot2)
+library(ggrepel)
+```
+
+```{r, echo = FALSE}
+tuesdata <- tidytuesdayR::tt_load(2025, week = 4)
+
+water_insecurity_2022 <- tuesdata$water_insecurity_2022
+water_insecurity_2023 <- tuesdata$water_insecurity_2023
+```
+
+```{r, echo = FALSE}
+west <- c("Arizona","Colorado","Idaho","Montana","Nevada","New Mexico","Utah","Wyoming",
+               "Alaska","California","Hawaii","Oregon","Washington")
+northeast <- c("Connecticut","Maine","Massachusetts","New Hampshire","Rhode Island","Vermont","New Jersey","New York","Pennsylvania")
+midwest <- c("Illinois","Indiana","Michigan","Ohio","Wisconsin","Iowa","Kansas","Minnesota","Missouri","Nebraska","North Dakota","South Dakota")
+south <- c("Delaware","Florida","Georgia","Maryland","North Carolina","South Carolina","Virginia","District of Columbia","West Virginia", 
+               "Alabama","Kentucky","Mississippi","Tennessee","Arkansas","Louisiana","Oklahoma","Texas","Puerto Rico")
+```
+
+```{r, echo = FALSE}
+water_insecurity_data <- water_insecurity_2023 %>% 
+  select(name, total_pop, plumbing, percent_lacking_plumbing)
+```
+
+```{r}
+head(water_insecurity_data)
+```
+
+
+## Regional Analysis
+
+Creating regions (West example)
+
+```{r}
+west <- c("Arizona","Colorado","Idaho","Montana","Nevada","New Mexico","Utah","Wyoming",
+               "Alaska","California","Hawaii","Oregon","Washington")
+```
+
+Creating separate "state" and "county" variables and assigning rows to region
+
+```{r}
+water_insecurity_2023 <- mutate(water_insecurity_2023,
+    state = str_extract(name, "(?<=, ).*"), 
+    county = str_extract(name, ".*(?=,)")
+  )
+water_insecurity_2023 <-  mutate(water_insecurity_2023,
+    region = case_when(
+      state %in% northeast ~ "Northeast",
+      state %in% midwest ~ "Midwest",
+      state %in% south ~ "South",
+      state %in% west ~ "West",
+      ))
+```
+
+## Regional Plot 
+```{r, echo = FALSE}
+state_avg23 <- water_insecurity_2023 %>% 
+  group_by(state, region) %>% 
+  summarize(avg_perc = mean(percent_lacking_plumbing, na.rm=TRUE)) 
+
+state_avg23 <- state_avg23 %>% 
+  mutate(region = factor(region, 
+                         levels = c("West", "Midwest", "South", "Northeast")))
+
+outliers <- state_avg23 %>% 
+  filter(avg_perc > 0.4)
+```
+<details> <summary>Code</summary>
+```{r}
+ggplot(state_avg23,
+  aes(x=region, 
+      y=avg_perc, 
+      color = region)) +
+geom_jitter(width = .2, 
+            size=3.5, 
+            alpha = .8, 
+            show.legend = FALSE) +
+geom_text_repel(data = outliers, 
+                aes(label = state), 
+                color = "black") +
+labs(x="Region",
+     y="Percentage Lacking Plumbing (State Mean)",
+     title="Percentage Lacking Plumbing 2023 "
+)
+```
+</details>
+
+## Examining The Outliers
+
+```{r, echo = FALSE}
+state_outliers <- water_insecurity_2023 %>% 
+  filter(state == "Alaska" | state == "Arizona" | state == "New Mexico")
+
+county_outliers <- state_outliers %>% 
+  filter(percent_lacking_plumbing > .6)
+
+```
+<details> <summary>Code</summary>
+```{r}
+ggplot(state_outliers, aes(x = log(total_pop), 
+                   y = percent_lacking_plumbing, 
+                   color = state)) +
+  geom_point(size = 3, 
+             alpha = .7) +
+  geom_smooth(method = "lm", 
+              color = "black") +
+  geom_text_repel(data = county_outliers, 
+                  aes(label = county), 
+                  color = "black") +
+  labs(x = "log(Population)", 
+       y = "Percent Lacking Plumbing", 
+       title = "Water Insecurity and Population (AK, AZ, & NM)") +
+  theme_minimal()
+```
+</details>
+
+## Examining relationship with indigenous populations
+
+Uploaded 2023 county-level data from census.gov
+
+```{r, echo = FALSE}
+census_data <- read.csv("/Users/xnonaka/Downloads/cc-est2024-alldata.csv")
+```
+
+```{r}
+census_data <- census_data %>% 
+  select(STNAME, CTYNAME, TOT_POP, YEAR, IA_MALE, IA_FEMALE, AGEGRP) %>% 
+  mutate(IA_TOT = IA_MALE + IA_FEMALE, 
+         IA_prop = (IA_MALE + IA_FEMALE)/TOT_POP) %>% 
+  filter(YEAR == 5, AGEGRP == 0) %>% 
+  rename(county = CTYNAME)
+```
+
+Joined census data with water insecurity data by county name 
+
+```{r}
+merged_data <- census_data %>% 
+  left_join(water_insecurity_2023, by = "county")
+```
+
+```{r, echo = FALSE}
+clean_data <- merged_data %>% 
+  filter(!is.na(IA_prop), !is.na(percent_lacking_plumbing))
+plumbing_outliers <- clean_data %>% 
+  filter(percent_lacking_plumbing > .9)
+```
+
+## Plotting the relationship
+
+<details> <summary>Code</summary>
+```{r}
+ggplot(clean_data, 
+       aes(x = IA_prop, 
+           y = percent_lacking_plumbing)) +
+  geom_point(alpha = 0.7, 
+             color = "steelblue2") +
+  geom_smooth(method = "lm", 
+              color = "black") +
+  geom_text_repel(data = plumbing_outliers, 
+                  label = plumbing_outliers$county) +
+  labs(x = "Native American Prop of County Population", 
+       y = "Percent Lacking Plumbing", 
+       title = "Relationship Between Indigenous Population Share and Water Insecurity") +
+  theme_minimal()
+```
+</details>
+
+## Sources 
+
+Azadpour, Elmera and Nell, Cee, 2024, "Mapping water insecurity in R with tidycensus," USGS,https://waterdata.usgs.gov/blog/acs-maps/
+
+U.S. Census Bureau, 2023, “Tenure by Plumbing Facilities,” American Community Survey, 1-Year Estimates Detailed Tables, Table B25049, accessed on Nov 27, 2024, https://data.census.gov/table?q=B25049&y=2023 .
+
+U.S. Census Bureau, 2023, “Total Population,” American Community Survey, 1-Year Estimates Detailed Tables, Table B01003, accessed on Nov 27, 2024, https://data.census.gov/table?q=B01003&y=2023 .
+
+U.S. Census Bureau, 2025, "County Population by Characteristics: 2020-2024", Annual County Resident Population Estimates by Age, Sex, Race, and Hispanic Origin: April 1, 2020 to July 1, 2024, accessed on Dec 2, 2025, 
+https://www.census.gov/data/tables/time-series/demo/popest/2020s-counties-detail.html
+
+

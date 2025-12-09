@@ -10,7 +10,7 @@ execute:
   message: false
 ---
 
-```{r, echo=FALSE} 
+```{r, echo=FALSE}
 library(tidyverse)
 ```
 
@@ -71,7 +71,8 @@ ggplot(light_dark_words, aes(
   labs(x="Play",
        y="Word Count")
 ```
-Each word type contains three words (dark has "dark", "black", and "night", and light has "light", "sun", and "day"). These are very limited categories for such broad themes, but how often these word types occur in each play. Romeo and Juliet twice as many of these words as the other two plays (even though Hamlet has the most words total). This may reflect the kinds of imagery used in Romeo and Juliet, in which the light and dark types are split about evenly. Hamlet and Macbeth have slightly more dark words, which may illustrate the darker settings/vibes of these plays (even though they are all tragedies). 
+
+Each word type contains three words (dark has "dark", "black", and "night", and light has "light", "sun", and "day"). These are very limited categories for such broad themes, but how often these word types occur in each play. Romeo and Juliet twice as many of these words as the other two plays (even though Hamlet has the most words total). This may reflect the kinds of imagery used in Romeo and Juliet, in which the light and dark types are split about evenly. Hamlet and Macbeth have slightly more dark words, which may illustrate the darker settings/vibes of these plays (even though they are all tragedies).
 
 ```{r}
 words_following_I <- hamlet %>%
@@ -92,7 +93,8 @@ I_words <- words_following_I %>%
 
 head(I_words, 20)
 ```
-This table shows the most common words following "I" in Hamlet. My goal was to idenfity the most common verbs from the play, and see if any uncommon or unexpected ones occur often. Shakespeare obviously used many words that are not widely used or understood anymore, but all of the most common verbs were very standard to today's English. One drawback from my code is I was only able to extract the words following the first "I" in a single line (so if I was used twice, it didn't extract the next word to add to the count).  
+
+This table shows the most common words following "I" in Hamlet. My goal was to identify the most common verbs from the play, and see if any uncommon or unexpected ones occur often. Shakespeare obviously used many words that are not widely used or understood anymore, but all of the most common verbs were very standard to today's English. One drawback from my code is I was only able to extract the words following the first "I" in a single line (so if I was used twice, it didn't extract the next word to add to the count).
 
 ```{r}
 opposite_words_romeo_juliet <- romeo_juliet %>% 
@@ -158,13 +160,16 @@ romeo_juliet_df <-pivot_longer(sum_words_romeo_juliet, cols=everything(), names_
 hamlet_df <- pivot_longer(sum_words_hamlet, cols=everything(), names_to = "word", values_to = "count")
 macbeth_df <- pivot_longer(sum_words_macbeth, cols=everything(), names_to = "word", values_to = "count")
 ```
+
 ```{r}
-romeo_juliet_df$word <- factor(romeo_juliet_df$word, levels = c("love", "hate", "life", "death", "heaven", "hell"))
-hamlet_df$word <- factor(hamlet_df$word, levels = c("love", "hate", "life", "death", "heaven", "hell"))
-macbeth_df$word <- factor(macbeth_df$word, levels = c("love", "hate", "life", "death", "heaven", "hell"))
+romeo_juliet_df <- romeo_juliet_df %>% 
+  mutate(word = fct_relevel(word, "love", "hate", "life", "death", "heaven", "hell"))
+hamlet_df <- hamlet_df %>% 
+  mutate(word = fct_relevel(word, "love", "hate", "life", "death", "heaven", "hell"))
+macbeth_df <- macbeth_df %>% 
+  mutate(word = fct_relevel(word, "love", "hate", "life", "death", "heaven", "hell"))
 
 ```
-
 
 ```{r}
 ggplot(romeo_juliet_df, aes(x=word, y=count)) + 
@@ -173,6 +178,7 @@ ggplot(romeo_juliet_df, aes(x=word, y=count)) +
        y="Count",
        title="Word counts in Romeo and Juliet")
 ```
+
 ```{r}
 ggplot(hamlet_df, aes(x=word, y=count)) + 
   geom_col() +
@@ -180,6 +186,7 @@ ggplot(hamlet_df, aes(x=word, y=count)) +
        y="Count",
        title="Word counts in Hamlet")
 ```
+
 ```{r}
 ggplot(macbeth_df, aes(x=word, y=count)) + 
   geom_col() +
@@ -187,20 +194,15 @@ ggplot(macbeth_df, aes(x=word, y=count)) +
        y="Count",
        title="Word counts in Macbeth")
 ```
-I wanted to expand on the first plot's theme of opposite word frequency. I identified three word pairs to count using the detect function, and plotted the distribution for all three plays. The highest total for any word is "love" in Romeo and Juliet, which makes sense. The play also favors "death" to "life" much more heavily than the other two plays. Life and death are split equally in Macbeth (and both slightly higher than "love"). "Hate" doesn't seem to be as common a word for Shakespeare. 
 
-Sources: 
-TidyTuesday: https://github.com/rfordatascience/tidytuesday/blob/main/data/2024/2024-09-17/readme.md
+I wanted to expand on the first plot's theme of opposite word frequency. I identified three word pairs to count using the detect function, and plotted the distribution for all three plays. The highest total for any word is "love" in Romeo and Juliet, which makes sense. The play also favors "death" to "life" much more heavily than the other two plays. Life and death are split equally in Macbeth (and both slightly higher than "love"). "Hate" doesn't seem to be as common a word for Shakespeare.
 
-Data: 
-Massachussetts Institute of Technology, "The Complete Works of William Shakespeare"
-https://shakespeare.mit.edu/
+Sources: TidyTuesday: <https://github.com/rfordatascience/tidytuesday/blob/main/data/2024/2024-09-17/readme.md>
 
-Shakespeare, "Hamlet"
-https://shakespeare.mit.edu/hamlet/
+Data: Massachussetts Institute of Technology, "The Complete Works of William Shakespeare" <https://shakespeare.mit.edu/>
 
-Shakespeare, "Macbeth"
-https://shakespeare.mit.edu/macbeth/
+Shakespeare, William, "Hamlet" <https://shakespeare.mit.edu/hamlet/>
 
-Shakespeare, "Romeo and Juliet" 
-https://shakespeare.mit.edu/romeo_juliet/
+Shakespeare, William, "Macbeth" <https://shakespeare.mit.edu/macbeth/>
+
+Shakespeare, William, "Romeo and Juliet" <https://shakespeare.mit.edu/romeo_juliet/>

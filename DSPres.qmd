@@ -192,7 +192,7 @@ ggplot(clean_data,
 
 ## Sources 
 
-Azadpour, Elmera and Nell, Cee, 2024, "Mapping water insecurity in R with tidycensus," USGS,https://waterdata.usgs.gov/blog/acs-maps/
+Azadpour, Elmera and Nell, Cee, 2024, "Mapping water insecurity in R with tidycensus," USGS, https://waterdata.usgs.gov/blog/acs-maps/
 
 U.S. Census Bureau, 2023, “Tenure by Plumbing Facilities,” American Community Survey, 1-Year Estimates Detailed Tables, Table B25049, accessed on Nov 27, 2024, https://data.census.gov/table?q=B25049&y=2023 .
 

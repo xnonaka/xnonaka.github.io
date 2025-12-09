@@ -9,9 +9,10 @@ execute:
   warning: false
   message: false
 ---
-England National Highways Traffic Data Set 
 
-The data set used in this plot contains speed and vehicle volume data captured throughout the day over the course of many days on different highway sites in England. 
+England National Highways Traffic Data Set
+
+The data set used in this plot contains speed and vehicle volume data captured throughout the day over the course of many days on different highway sites in England.
 
 ```{r}
 library(tidyverse)
@@ -23,6 +24,7 @@ tuesdata <- tidytuesdayR::tt_load(2024, week = 49)
 
 A64_traffic <- tuesdata$A64_traffic
 ```
+
 ```{r}
 traffic <-A64_traffic %>% 
   group_by(`Time Interval`) %>% 
@@ -40,8 +42,10 @@ ggplot(traffic,
        title="Highway Traffic Speed in England throughout the day")
 ```
 
-Average speed across all highway sites is measured relative to the time of day the data was captured. Time is displayed here as a series of interval numbers from 0 to 95. 0 represents the first period of data on a new day, and 95 represents the last. Thus noon is around the 47th interval. 
+Average speed across all highway sites is measured relative to the time of day the data was captured. Time is displayed here as a series of interval numbers from 0 to 95. 0 represents the first period of data on a new day, and 95 represents the last. Thus noon is around the 47th interval.
 
-Source:
+Sources:
+
+National Highways, "WebTRIS Traffic Flow API." WebTRIS. https://webtris.nationalhighways.co.uk/api/swagger/ui/index
+
 https://github.com/rfordatascience/tidytuesday/blob/main/data/2024/2024-12-03/readme.md
-National Highways - https://webtris.nationalhighways.co.uk/api/swagger/ui/index

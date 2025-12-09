@@ -10,18 +10,18 @@ execute:
   message: false
 ---
 
-```{r}
+```{r, echo = FALSE}
 library(tidyverse)
 library(dplyr)
+library(ggplot2)
+library(ggrepel)
 ```
 
-Water Insecurity in US Counties 
+Water Insecurity in US Counties
 
-This dataset contains the percentage of people lacking plumbing in US counties. To create a simpler plot, I took the mean percentages across each state's counties, and displayed that value (each point is a state). 
+This dataset contains the percentage of people lacking plumbing in US counties. To create a simpler plot, I took the mean percentages across each state's counties, and displayed that value (each point is a state).
 
-```{r}
-tuesdata <- tidytuesdayR::tt_load('2025-01-28')
-## OR
+```{r, echo = FALSE}
 tuesdata <- tidytuesdayR::tt_load(2025, week = 4)
 
 water_insecurity_2022 <- tuesdata$water_insecurity_2022
@@ -38,19 +38,9 @@ south <- c("Delaware","Florida","Georgia","Maryland","North Carolina","South Car
 ```
 
 ```{r}
-water_insecurity_2022 <- mutate(water_insecurity_2022,
-    state = sub(".*,\\s*(.*)", "\\1", name) 
-  )
-water_insecurity_2022 <-  mutate(water_insecurity_2022,
-    region = case_when(
-      state %in% northeast ~ "Northeast",
-      state %in% midwest ~ "Midwest",
-      state %in% south ~ "South",
-      state %in% west ~ "West",
-      TRUE ~ NA_character_))
-
 water_insecurity_2023 <- mutate(water_insecurity_2023,
-    state = sub(".*,\\s*(.*)", "\\1", name) 
+    state = str_extract(name, "(?<=, ).*"), 
+    county = str_extract(name, ".*(?=,)")
   )
 water_insecurity_2023 <-  mutate(water_insecurity_2023,
     region = case_when(
@@ -61,24 +51,87 @@ water_insecurity_2023 <-  mutate(water_insecurity_2023,
       TRUE ~ NA_character_))
 ```
 
-
 ```{r}
-state_avg23 <-water_insecurity_2023 %>% 
+state_avg23 <- water_insecurity_2023 %>% 
   group_by(state, region) %>% 
   summarize(avg_perc = mean(percent_lacking_plumbing, na.rm=TRUE)) 
- 
+
+outliers <- state_avg23 %>% 
+  filter(avg_perc > 0.4)
+
 ggplot(state_avg23,
   aes(x=region, 
       y=avg_perc, 
       color = region)) +
 geom_jitter(width=.2, size=3, alpha=.7, show.legend = FALSE) +
+geom_text_repel(data = outliers, aes(label = state), color = "black") +
 labs(x="Region",
      y="Percentage Lacking Plumbing (State Mean)",
      title="Percentage Lacking Plumbing 2023 "
 )
 ```
-This graph plots the mean percentage of population lacking plumbing for each state across its counties. The states are grouped into the U.S. census regions (with Puerto Rico added to the South region), to compare mean county percentages in each region. 
 
-Source: 
-https://github.com/rfordatascience/tidytuesday/tree/main/data/2025/2025-01-28
-USGS - https://waterdata.usgs.gov/blog/acs-maps/
+This graph plots the mean percentage of population lacking plumbing for each state across its counties. The states are grouped into the U.S. census regions (with Puerto Rico added to the South region), to compare mean county percentages in each region.
+
+```{r}
+state_outliers <- water_insecurity_2023 %>% 
+  filter(state == "Alaska" | state == "Arizona" | state == "New Mexico")
+
+county_outliers <- state_outliers %>% 
+  filter(percent_lacking_plumbing > .6)
+
+ggplot(state_outliers, aes(x = log(total_pop), 
+                   y = percent_lacking_plumbing)) +
+  geom_point(color = "steelblue") +
+  geom_smooth(method = "lm", color = "black") +
+  geom_text_repel(data = county_outliers, aes(label = county))
+```
+
+```{r}
+census_data <- read.csv("/Users/xnonaka/Downloads/cc-est2024-alldata.csv")
+```
+
+```{r}
+state_data <- census_data %>% 
+  select(STNAME, CTYNAME, TOT_POP, YEAR, IA_MALE, IA_FEMALE, AGEGRP) %>% 
+  mutate(IA_TOT = IA_MALE + IA_FEMALE, 
+         IA_prop = (IA_MALE + IA_FEMALE)/TOT_POP) %>% 
+  filter(YEAR == 5, AGEGRP == 0) %>% 
+  rename(county = CTYNAME)
+```
+
+```{r}
+merged_data <- state_data %>% 
+  left_join(water_insecurity_2023, by = "county")
+```
+
+```{r}
+clean_data <- merged_data %>% 
+  filter(!is.na(IA_prop), !is.na(percent_lacking_plumbing))
+plumbing_outliers <- clean_data %>% 
+  filter(percent_lacking_plumbing > .9)
+```
+
+```{r}
+ggplot(clean_data, 
+       aes(x = IA_prop, 
+           y = percent_lacking_plumbing)) +
+  geom_point(alpha = 0.6, color = "steelblue") +
+  geom_smooth(method = "lm", se = TRUE, color = "black") +
+  geom_text_repel(data = plumbing_outliers, label = plumbing_outliers$county)
+  labs(x = "Native American Prop of County Population", 
+       y = "Percent Lacking Plumbing", 
+       title = "Relationship Between Indigenous Population Share and Water Insecurity") +
+  theme_minimal()
+  
+```
+
+Sources: Azadpour, Elmera and Nell, Cee, 2024, "Mapping water insecurity in R with tidycensus," USGS, https://waterdata.usgs.gov/blog/acs-maps/
+
+U.S. Census Bureau, 2023, “Tenure by Plumbing Facilities,” American Community Survey, 1-Year Estimates Detailed Tables, Table B25049, accessed on Nov 27, 2024, https://data.census.gov/table?q=B25049&y=2023 .
+
+U.S. Census Bureau, 2023, “Total Population,” American Community Survey, 1-Year Estimates Detailed Tables, Table B01003, accessed on Nov 27, 2024, https://data.census.gov/table?q=B01003&y=2023 .
+
+U.S. Census Bureau, 2025, "County Population by Characteristics: 2020-2024", Annual County Resident Population Estimates by Age, Sex, Race, and Hispanic Origin: April 1, 2020 to July 1, 2024, accessed on Dec 2, 2025, https://www.census.gov/data/tables/time-series/demo/popest/2020s-counties-detail.html
+
+https://github.com/rfordatascience/tidytuesday/tree/main/data/2025/2025-01-28 USGS - https://waterdata.usgs.gov/blog/acs-maps/

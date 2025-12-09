@@ -27,6 +27,6 @@ The shift in advertising represents the clear, profit-oriented goal of Target’
 
 Sources 
 
-Duhigg, Charles. “How Companies Learn Your Secrets.” The New York Times, Feb. 16, 2012, https://www.nytimes.com/2012/02/19/magazine/shopping-habits.html?unlocked_article_code=1.6U4.nLSt.-yehBjKHEmPW&smid=url-share 
+Duhigg, Charles. “How Companies Learn Your Secrets.” The New York Times, Feb. 16, 2012, [https://www.nytimes.com/2012/02/19/magazine/shopping-habits.html?unlocked_article_code=1.6U4.nLSt.-yehBjKHEmPW&smid=url-share ](https://www.nytimes.com/2012/02/19/magazine/shopping-habits.html?unlocked_article_code=1.6U4.nLSt.-yehBjKHEmPW&smid=url-share)
 
-Target. “Target Privacy Policy.” https://www.target.com/c/target-privacy-policy/-/N-4sr7p
+Target. “Target Privacy Policy.” <https://www.target.com/c/target-privacy-policy/-/N-4sr7p>

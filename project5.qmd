@@ -14,6 +14,7 @@ execute:
 library(DBI)
 library(ggplot2)
 library(tidyverse)
+library(RMariaDB)
 con_traffic <- DBI::dbConnect(
 
   RMariaDB::MariaDB(),
@@ -31,46 +32,86 @@ con_traffic <- DBI::dbConnect(
 I investigate trends in traffic/pedestrian stop data from my hometown of San Francisco. The first analyses I did was frequency throughout the day. I sought to visualize the trends over the course of the day by grouping by time and plotting each count. The time for each stop was marked with the hour and minute (seconds not specified) for San Francisco, so I grouped by the time variable to count the frequency at each minute in the day.
 
 ```{sql connection=con_traffic}
-DESCRIBE ca_san_francisco_2020_04_01;
+DESCRIBE ca_san_francisco_2020_04_01
 ```
 
 ```{sql connection = con_traffic}
 #| output.var = "time_table"
 SELECT time, COUNT(*) AS num_stops
 FROM ca_san_francisco_2020_04_01
-GROUP BY time  
+WHERE time IS NOT NULL 
+GROUP BY time 
+ORDER BY time;
 ```
 
 ```{r}
-time_table2 <- time_table %>% 
-  filter(!is.na(time)) %>% 
-  arrange(time)
-```
-
-```{r}
-time_table2 %>% 
+time_table %>% 
   ggplot(aes(x = time, y = num_stops)) +
   geom_point() +
   labs(x = "Time", 
        y = "Number of Stops", 
        title = "Number of stops throughout day")
 ```
+```{sql connection = con_traffic}
+#| output.var = "time_table8to10"
+SELECT time, COUNT(*) AS num_stops
+FROM ca_san_francisco_2020_04_01
+WHERE time BETWEEN '8:00:00' AND '10:00:00'
+GROUP BY time 
+ORDER BY time;
+```
+```{r}
+time_table8to10 %>% 
+  ggplot(aes(x = time, 
+             y = num_stops, 
+             color = minute(time) %in% c(0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55))) +
+  geom_point() +
+  theme(legend.position = "none")
+  labs(x = "Time", 
+       y = "Number of Stops", 
+       title = "Number of stops from 8AM to 10AM")
+```
 
-Based on the plot of counts at each minute, there is an evident discrepency in the time data. Upon observing the data, it is clear that for minute multiples of 5 (and especially 10) the count spikes (i.e. 1:30 much higher than 1:29 and 1:31). This can be viewed in the plot, with consistent low values and regular spikes every 5 minutes. I made the assumption that when an individual traffic stop is recorded, the time of day is often rounded to the nearest regular 5th minute. This is especially clear when observing 10 minute marks, as every 10 minutes after the hour, the count spikes singificantly. To account for the variability of rounding, I chose to only include the count for every 10th minute in my plot.
+Based on the plot of counts at each minute, there is an evident discrepancy in the time data. Upon observing the data, it is clear that for minute multiples of 5 (and especially 10) the count spikes (i.e. 1:30 much higher than 1:29 and 1:31). This can be viewed in the second plot (stop frequency from 8AM to 10AM), where times every 5 minute are blue. It follows that when an individual traffic stop is recorded, the time of day is often rounded to the nearest regular 5th minute. 
 
 ```{r}
-time_table5 <- time_table2 %>% 
-  filter(minute(time) %in% c(0, 10, 20, 30, 40, 50))
+time_table5 <- time_table %>% 
+  mutate(time10 = floor_date(time, unit = "5 minutes")) %>% 
+  group_by(time10) %>% 
+  summarize(num_stops = sum(num_stops))
 time_table5 %>% 
   ggplot(aes(x = time, y = num_stops)) + 
   geom_point() +
   geom_smooth() +
   labs(x = "Time", 
        y = "Number of Stops", 
-       title = "Number of Stops (Every 10th minute)")
+       title = "Number of Stops (Every 5th minute)")
 ```
 
 There is still some short-term variation and spikes, but it is easier to observe a trend using the geom_smooth line. There is a clear drop in the early morning after 12AM, before the count begins to rise again around 5AM. This is likely when the number of cars on the road starts to increase. The count increases throughout the day, with the slope decreasing gradually after 10AM (before seemingly increasing slightly in the evening).
+
+```{sql connection=con_traffic}
+#| output.var = "bay_table"
+SELECT time, SUM(arrest_made) AS num_arrests, "San Francisco" AS city 
+FROM ca_san_francisco_2020_04_01
+GROUP BY time
+
+
+UNION ALL
+
+SELECT time, SUM(arrest_made) AS num_arrests, "Oakland" AS city 
+FROM ca_oakland_2020_04_01
+GROUP BY time
+
+
+UNION ALL
+
+SELECT time, SUM(arrest_made) AS num_arrests, "San Jose" AS city 
+FROM ca_san_jose_2020_04_01
+GROUP BY time
+
+ORDER BY time, city  
+```
 
 ```{sql connection=con_traffic}
 #| output.var = "weekend_table"
@@ -94,7 +135,7 @@ weekend_table1 %>%
        title = "Number of Stops (Every 30th minute)")
 ```
 
-In this graph I isolate the data from Fridays, Saturdays and Sundays. To simplify the plot and reduce additional data collection variability, I filter for the stops only from either on the hour or half past. It seems that Friday has a higher number of stops from around 4AM to after 8PM. Sunday has significantly fewer stops in the evening, with the difference only growing later into the night. Interestingly, the positions at the end of the plot are vastly different than the beginning of the plot, though I'm not sure of a possible explaination.
+In this graph I isolate the data from Fridays, Saturdays and Sundays. To simplify the plot and reduce additional data collection variability, I filter for the stops only from either on the hour or half past. It seems that Friday has a higher number of stops from around 4AM to after 8PM. Sunday has substantially fewer stops in the evening, with the difference only growing later into the night. Interestingly, the positions at the end of the plot are vastly different than the beginning of the plot, though I'm not sure of a possible explaination.
 
 I was also curious to analyze traffic stop data based on race for young adults. To make additional comparison, I added the data set from Oakland. I filtered the data to include just the stops where the subject was under 25 years old.
 
@@ -129,6 +170,6 @@ References
 
 E. Pierson, C. Simoiu, J. Overgoor, S. Corbett-Davies, D. Jenson, A. Shoemaker, V. Ramachandran, P. Barghouty, C. Phillips, R. Shroff, and S. Goel. “A large-scale analysis of racial disparities in police stops across the United States”. Nature Human Behaviour, Vol. 4, 2020.
 
-```{r cleanup, include=FALSE}
+```{r, include=FALSE}
 dbDisconnect(con_traffic)
 ```

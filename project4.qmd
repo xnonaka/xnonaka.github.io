@@ -19,7 +19,7 @@ For Target’s process, purchasing must be matched with the corresponding custom
 
 Although the data is not public, respect for privacy remains questionable. The data itself (what you purchase) is not private, but a customer’s use of purchased products in her personal life should be private. The goal of the predictor model is to make estimates about a woman’s personal life. While the data gathering itself does not infringe on privacy, the model it is used for does so. Sending advertisements based on the outcomes is a key piece of this. Duhigg described one example of a father who was upset his daughter received ads for baby products, only to find out she was pregnant. The ads and coupons represent Target’s assumption/estimate of pregnancy, and regardless of their accuracy, they may have unintended consequences for the woman receiving them. Thus, there are very significant privacy issues with not just Target’s data analysis, but also the resulting targeted marketing strategies. 
 
-**Ethical implications and Impact on Individuals**
+**Unintended consequences**
 
 The unintended consequences on privacy are clear ethical implications that are not significant in Target’s marketing strategy. Target collected and used the data without consideration for the individuals. After some pushback, the targeted ads were diluted with other ads unrelated to pregnancy or child care. This ended up boosting the likelihood that the coupons for baby products would be used. If a woman “believes she hasn’t been spied on, she’ll use the coupons,” said Pole. Clearly, the targeted ads were not received well, which highlights the personal and emotional impact on the women whose personal lives were estimated without their knowledge. 
 

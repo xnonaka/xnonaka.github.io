@@ -126,10 +126,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
-  <li class="nav-item">
-    <a class="nav-link" href="./about.html"> 
-<span class="menu-text">About Me</span></a>
-  </li>  
   <li class="nav-item dropdown ">
     <a class="nav-link dropdown-toggle" href="#" id="nav-menu-data-viz" role="link" data-bs-toggle="dropdown" aria-expanded="false">
  <span class="menu-text">Data Viz</span>
@@ -282,11 +278,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <pre><code># A tibble: 5 × 5
   obs_avg_diff obs_med_diff perm_avg_diff perm_med_diff   rep
          &lt;dbl&gt;        &lt;dbl&gt;         &lt;dbl&gt;         &lt;dbl&gt; &lt;int&gt;
-1         3.76            4         0.744          2.20     1
-2         3.76            4        -0.305         -1.55     2
-3         3.76            4        -0.298          0.5      3
-4         3.76            4        -0.549         -1.95     4
-5         3.76            4        -0.693         -1.25     5</code></pre>
+1         3.76            4         0.765         2.40      1
+2         3.76            4         0.405         0.900     2
+3         3.76            4        -0.371        -1.35      3
+4         3.76            4         0.541         0.600     4
+5         3.76            4         0.383         0.300     5</code></pre>
 </div>
 </div>
 <p>The permutation function creates a “bill_perm” variable, which randomly selects a value from the bill_length_mm column and assigns it a new row. It does this for each row, so that the bill_perm column is randomly swapped bill length values. Then, it groups the rows by sex (male and female, NAs previously removed) and summarizes over the average and median of both the observed data (bill_length_mm) and the random data (bill_perm). Finally, it summarizes again using the diff function to show the difference between the bill_perm average and median between sexes.</p>

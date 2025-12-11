@@ -16,8 +16,7 @@ execute:
 
 ## Data
 
-Tidy Tuesday Water Insecurity Data - Observation at county level
-measured by percent of households lacking plumbing
+Tidy Tuesday Water Insecurity Data - Observation at county level measured by percent of households lacking plumbing
 
 ```{r, echo = FALSE}
 library(tidyverse)
@@ -51,7 +50,6 @@ water_insecurity_data <- water_insecurity_2023 %>%
 head(water_insecurity_data)
 ```
 
-
 ## Regional Analysis
 
 Creating regions (West example)
@@ -77,7 +75,8 @@ water_insecurity_2023 <-  mutate(water_insecurity_2023,
       ))
 ```
 
-## Regional Plot 
+## Regional Plot
+
 ```{r, echo = FALSE}
 state_avg23 <- water_insecurity_2023 %>% 
   group_by(state, region) %>% 
@@ -90,7 +89,11 @@ state_avg23 <- state_avg23 %>%
 outliers <- state_avg23 %>% 
   filter(avg_perc > 0.4)
 ```
-<details> <summary>Code</summary>
+
+<details>
+
+<summary>Code</summary>
+
 ```{r}
 ggplot(state_avg23,
   aes(x=region, 
@@ -108,6 +111,7 @@ labs(x="Region",
      title="Percentage Lacking Plumbing 2023 "
 )
 ```
+
 </details>
 
 ## Examining The Outliers
@@ -120,7 +124,11 @@ county_outliers <- state_outliers %>%
   filter(percent_lacking_plumbing > .6)
 
 ```
-<details> <summary>Code</summary>
+
+<details>
+
+<summary>Code</summary>
+
 ```{r}
 ggplot(state_outliers, aes(x = log(total_pop), 
                    y = percent_lacking_plumbing, 
@@ -137,6 +145,7 @@ ggplot(state_outliers, aes(x = log(total_pop),
        title = "Water Insecurity and Population (AK, AZ, & NM)") +
   theme_minimal()
 ```
+
 </details>
 
 ## Examining relationship with indigenous populations
@@ -156,7 +165,7 @@ census_data <- census_data %>%
   rename(county = CTYNAME)
 ```
 
-Joined census data with water insecurity data by county name 
+Joined census data with water insecurity data by county name
 
 ```{r}
 merged_data <- census_data %>% 
@@ -172,7 +181,10 @@ plumbing_outliers <- clean_data %>%
 
 ## Plotting the relationship
 
-<details> <summary>Code</summary>
+<details>
+
+<summary>Code</summary>
+
 ```{r}
 ggplot(clean_data, 
        aes(x = IA_prop, 
@@ -188,9 +200,10 @@ ggplot(clean_data,
        title = "Relationship Between Indigenous Population Share and Water Insecurity") +
   theme_minimal()
 ```
+
 </details>
 
-## Sources 
+## Sources
 
 Azadpour, Elmera and Nell, Cee, 2024, "Mapping water insecurity in R with tidycensus," USGS, https://waterdata.usgs.gov/blog/acs-maps/
 
@@ -198,7 +211,4 @@ U.S. Census Bureau, 2023, “Tenure by Plumbing Facilities,” American Communit
 
 U.S. Census Bureau, 2023, “Total Population,” American Community Survey, 1-Year Estimates Detailed Tables, Table B01003, accessed on Nov 27, 2024, https://data.census.gov/table?q=B01003&y=2023 .
 
-U.S. Census Bureau, 2025, "County Population by Characteristics: 2020-2024", Annual County Resident Population Estimates by Age, Sex, Race, and Hispanic Origin: April 1, 2020 to July 1, 2024, accessed on Dec 2, 2025, 
-https://www.census.gov/data/tables/time-series/demo/popest/2020s-counties-detail.html
-
-
+U.S. Census Bureau, 2025, "County Population by Characteristics: 2020-2024", Annual County Resident Population Estimates by Age, Sex, Race, and Hispanic Origin: April 1, 2020 to July 1, 2024, accessed on Dec 2, 2025, https://www.census.gov/data/tables/time-series/demo/popest/2020s-counties-detail.html

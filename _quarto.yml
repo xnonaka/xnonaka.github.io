@@ -6,8 +6,6 @@ website:
   title: "xnonaka.github.io"
   navbar:
     right:
-      - text: "About Me"
-        href: about.qmd
       - text: "Data Viz"
         menu:
           - text: "Water Insecurity"

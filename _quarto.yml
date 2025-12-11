@@ -14,16 +14,16 @@ website:
             href: waterinsecurity.qmd
           - text: "Highway Traffic"
             href: traffic.qmd
-          - text: "Shakespeare Text"
-            href: project2.qmd
-          - text: "Penguin Permutation"
-            href: project3.qmd
-          - text: "Data Ethics"
-            href: project4.qmd
-          - text: "Traffic Stop Data"
-            href: project5.qmd
-          - text: "Final Presentation"
-            href: DSPres.qmd
+      - text: "Shakespeare Text Analysis"
+        href: project2.qmd
+      - text: "Penguin Permutation"
+        href: project3.qmd
+      - text: "Data Ethics"
+        href: project4.qmd
+      - text: "Traffic Stop Data"
+        href: project5.qmd
+      - text: "Final Presentation"
+        href: DSPres.qmd
 
 format:
   html:

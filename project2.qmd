@@ -62,6 +62,7 @@ light_dark_words <- pivot_longer(light_dark_words, cols=c(light, dark), names_to
 ```
 
 ```{r}
+#| fig-alt: "A bar chart with counts of light and dark words in Hamlet, Macbeth, and Romeo and Juliet."
 ggplot(light_dark_words, aes(
   x=play, 
   y=count, 
@@ -69,7 +70,8 @@ ggplot(light_dark_words, aes(
 )) +
   geom_col() +
   labs(x="Play",
-       y="Word Count")
+       y="Word Count",
+       title = "Light and Dark Word Counts")
 ```
 
 Each word type contains three words (dark has "dark", "black", and "night", and light has "light", "sun", and "day"). These are very limited categories for such broad themes, but how often these word types occur in each play. Romeo and Juliet twice as many of these words as the other two plays (even though Hamlet has the most words total). This may reflect the kinds of imagery used in Romeo and Juliet, in which the light and dark types are split about evenly. Hamlet and Macbeth have slightly more dark words, which may illustrate the darker settings/vibes of these plays (even though they are all tragedies).
@@ -172,6 +174,7 @@ macbeth_df <- macbeth_df %>%
 ```
 
 ```{r}
+#| fig-alt: "A bar chart showing the counts of opposite word pairs in Romeo and Juliet."
 ggplot(romeo_juliet_df, aes(x=word, y=count)) + 
   geom_col() +
   labs(x="Word", 
@@ -180,6 +183,7 @@ ggplot(romeo_juliet_df, aes(x=word, y=count)) +
 ```
 
 ```{r}
+#| fig-alt: "A bar chart showing the counts of opposite word pairs in Hamlet."
 ggplot(hamlet_df, aes(x=word, y=count)) + 
   geom_col() +
   labs(x="Word", 
@@ -188,6 +192,7 @@ ggplot(hamlet_df, aes(x=word, y=count)) +
 ```
 
 ```{r}
+#| fig-alt: "A bar chart showing the counts of opposite word pairs in Macbeth."
 ggplot(macbeth_df, aes(x=word, y=count)) + 
   geom_col() +
   labs(x="Word", 
@@ -197,7 +202,7 @@ ggplot(macbeth_df, aes(x=word, y=count)) +
 
 I wanted to expand on the first plot's theme of opposite word frequency. I identified three word pairs to count using the detect function, and plotted the distribution for all three plays. The highest total for any word is "love" in Romeo and Juliet, which makes sense. The play also favors "death" to "life" much more heavily than the other two plays. Life and death are split equally in Macbeth (and both slightly higher than "love"). "Hate" doesn't seem to be as common a word for Shakespeare.
 
-Sources: TidyTuesday: <https://github.com/rfordatascience/tidytuesday/blob/main/data/2024/2024-09-17/readme.md>
+Sources:
 
 Data: Massachussetts Institute of Technology, "The Complete Works of William Shakespeare" <https://shakespeare.mit.edu/>
 
@@ -206,3 +211,5 @@ Shakespeare, William, "Hamlet" <https://shakespeare.mit.edu/hamlet/>
 Shakespeare, William, "Macbeth" <https://shakespeare.mit.edu/macbeth/>
 
 Shakespeare, William, "Romeo and Juliet" <https://shakespeare.mit.edu/romeo_juliet/>
+
+TidyTuesday: <https://github.com/rfordatascience/tidytuesday/blob/main/data/2024/2024-09-17/readme.md>

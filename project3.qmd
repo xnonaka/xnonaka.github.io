@@ -12,17 +12,18 @@ execute:
 
 I investigate the difference in bill length between male and female penguins from the Palmer Penguins data set. Generally, male penguins are slightly larger than female penguins, but in some species the difference is minimal. I hope to determine if bill length is a good indicator of sex for the species in the data set (Adelie, Gentoo, and Chinstrap). The hypothesis I'm testing is that male penguins have longer bills than females. To do this, I use a permutation test to compare the observed bill length values for male and female penguins with a random distribution.
 
-```{r}
+```{r, echo = FALSE}
 library(tidyverse)
 library(dplyr)
 library(palmerpenguins)
 ```
 
-```{r}
+```{r, echo = FALSE}
 view(penguins)
 ```
 
 ```{r}
+#| fig-alt: "A box plot showing the bill length of female vs male pengiuns from the Palmer Penguins data set." 
 penguin_data <- penguins %>% 
   filter(!is.na(sex))
 penguin_data %>% 
@@ -81,18 +82,21 @@ perm_data <-
 The map function inputs a number vector into the permutation function. The function takes the argument n as the number of repetitions, so I map a vector 1:500 into the function to repeat it 500 times with the penguin data to generate 500 average bill length differences between male and female penguins under random chance.
 
 ```{r}
+#| fig-alt: "A histogram showing the distribution of mean differences under the null using the permutation function, with the observed difference shown in red." 
 perm_data %>% 
   ggplot(aes(
     x = perm_avg_diff)) +
   geom_histogram() + 
   geom_vline(aes(xintercept = obs_avg_diff), color = "red") +
   labs(x = "Difference in mean", 
-       y = "Count")
+       y = "Count", 
+       title = "Observed difference in mean vs null distribution")
 ```
 
 This histograms shows the distribution of the 500 differences between mean bill lengths from the randomly sorted bill length values. The red line is the observed difference in mean bill lengths at 3.76.
 
 ```{r}
+"A histogram showing the distribution of median differences under the null using the permutation function, with the observed difference shown in red." 
 perm_data %>% 
   ggplot(aes(
     x = perm_med_diff)) +
@@ -101,6 +105,7 @@ perm_data %>%
   labs(
     x = "Difference in median", 
     y = "Count", 
+    title = "Observed difference in median vs null distribution"
   )
 ```
 

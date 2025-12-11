@@ -3,9 +3,10 @@ title: "Water Insecurity in the US (2023)"
 description: "Analysis of US county plumbing data from TidyTuesday"
 author: Xander Nonaka
 date: September 24, 2025 
-format: html
+format: 
+  html:
+    code-fold: TRUE 
 execute:
-  echo: false
   warning: false
   message: false
 ---
@@ -19,7 +20,7 @@ library(ggrepel)
 
 Water Insecurity in US Counties
 
-This dataset contains the percentage of people lacking plumbing in US counties. To create a simpler plot, I took the mean percentages across each state's counties, and displayed that value (each point is a state).
+This dataset contains the percentage of people lacking plumbing in US counties. Shown first is a plot of county population and the percent lacking plumbing. Almost all counties have less than 1% lacking plumbing, with higher percentages skewed towards the lower population side.
 
 ```{r, echo = FALSE}
 tuesdata <- tidytuesdayR::tt_load(2025, week = 4)
@@ -27,6 +28,22 @@ tuesdata <- tidytuesdayR::tt_load(2025, week = 4)
 water_insecurity_2022 <- tuesdata$water_insecurity_2022
 water_insecurity_2023 <- tuesdata$water_insecurity_2023
 ```
+
+```{r}
+#| label: water_insecurity-plot
+#| fig-cap: "People Lacking Plumbing and Population in every US county"
+#| fig-alt: "A scatter plot showing the relationship between county population and the percentage of people lacking plumbing."
+water_insecurity_2023 %>% 
+  ggplot(aes(x = log10(total_pop), 
+             y = percent_lacking_plumbing)) +
+  geom_point() +
+  labs(x = "log(Population)", 
+       y = "Percent Lacking Plumbing", 
+       title = "Percent Lacking Plumbing in US Counties") +
+  theme_minimal()
+```
+
+To analyze the data and simplify visualization, I took mean percentages across each state's counties to display values for every state. I first grouped each state into U.S. Census regions.
 
 ```{r}
 west <- c("Arizona","Colorado","Idaho","Montana","Nevada","New Mexico","Utah","Wyoming",
@@ -51,7 +68,12 @@ water_insecurity_2023 <-  mutate(water_insecurity_2023,
       TRUE ~ NA_character_))
 ```
 
+I then used a jitter plot to display the mean state values for each region.
+
 ```{r}
+#| label: state-plot
+#| fig-cap: "Mean State Percentage of People Lacking Plumbing by Region"
+#| fig-alt: "A jitter plot showing the mean percentage of people lacking plumbing for every state, grouped by US Census region. Outlier states with values over 0.4% are labeled."
 state_avg23 <- water_insecurity_2023 %>% 
   group_by(state, region) %>% 
   summarize(avg_perc = mean(percent_lacking_plumbing, na.rm=TRUE)) 
@@ -71,9 +93,13 @@ labs(x="Region",
 )
 ```
 
-This graph plots the mean percentage of population lacking plumbing for each state across its counties. The states are grouped into the U.S. census regions (with Puerto Rico added to the South region), to compare mean county percentages in each region.
+The West region has three clear outliers, labeled in the plot. I was curious about the counties in those states, so I created a scatter plot with the counties in Alaska, Arizona, and New Mexico.
 
 ```{r}
+#| label: outlier-plot
+#| fig-cap: "Percent Lacking Plumbing in AK, AZ and NM counties"
+#| fig-alt: "A scatter plot showing the percentage of people lacking plumbing in counties in Alaska, Arizona, and New Mexico. Counties with values over 0.6% are labeled."
+
 state_outliers <- water_insecurity_2023 %>% 
   filter(state == "Alaska" | state == "Arizona" | state == "New Mexico")
 
@@ -81,18 +107,29 @@ county_outliers <- state_outliers %>%
   filter(percent_lacking_plumbing > .6)
 
 ggplot(state_outliers, aes(x = log(total_pop), 
-                   y = percent_lacking_plumbing)) +
-  geom_point(color = "steelblue") +
-  geom_smooth(method = "lm", color = "black") +
-  geom_text_repel(data = county_outliers, aes(label = county))
+                   y = percent_lacking_plumbing, 
+                   color = state)) +
+  geom_point(size = 3, 
+             alpha = .7) +
+  geom_smooth(method = "lm", 
+              color = "black") +
+  geom_text_repel(data = county_outliers, 
+                  aes(label = county), 
+                  color = "black") +
+  labs(x = "log(Population)", 
+       y = "Percent Lacking Plumbing", 
+       title = "Water Insecurity and Population (AK, AZ, & NM)") +
+  theme_minimal()
 ```
+
+Based on the plot, the counties with high, outlier values are lower population counties. Upon preliminary research of county-level census data, several of these counties had large Native American populations. I was curious to investigate the exact relationship between this demographic and water insecurity across all counties. I uploaded public census demographic data from the census website into a data frame, and joined it with the water insecurity data set.
 
 ```{r}
 census_data <- read.csv("/Users/xnonaka/Downloads/cc-est2024-alldata.csv")
 ```
 
 ```{r}
-state_data <- census_data %>% 
+census_data <- census_data %>% 
   select(STNAME, CTYNAME, TOT_POP, YEAR, IA_MALE, IA_FEMALE, AGEGRP) %>% 
   mutate(IA_TOT = IA_MALE + IA_FEMALE, 
          IA_prop = (IA_MALE + IA_FEMALE)/TOT_POP) %>% 
@@ -101,7 +138,7 @@ state_data <- census_data %>%
 ```
 
 ```{r}
-merged_data <- state_data %>% 
+merged_data <- census_data %>% 
   left_join(water_insecurity_2023, by = "county")
 ```
 
@@ -113,18 +150,25 @@ plumbing_outliers <- clean_data %>%
 ```
 
 ```{r}
+#| label: county-plot
+#| fig-cap: "Percent Lacking Plumbing and Native American Percent of County Population"
+#| fig-alt: "A scatter plot showing the relationship between percentage of people lacking plumbing and the Native American population as a percent of total population. Counties with values over 0.9% are labeled."
 ggplot(clean_data, 
-       aes(x = IA_prop, 
+       aes(x = IA_prop * 100, 
            y = percent_lacking_plumbing)) +
-  geom_point(alpha = 0.6, color = "steelblue") +
-  geom_smooth(method = "lm", se = TRUE, color = "black") +
-  geom_text_repel(data = plumbing_outliers, label = plumbing_outliers$county)
-  labs(x = "Native American Prop of County Population", 
+  geom_point(alpha = 0.7, 
+             color = "steelblue2") +
+  geom_smooth(method = "lm", 
+              color = "black") +
+  geom_text_repel(data = plumbing_outliers, 
+                  aes(label = county)) +
+  labs(x = "Native American % of County Population", 
        y = "Percent Lacking Plumbing", 
        title = "Relationship Between Indigenous Population Share and Water Insecurity") +
   theme_minimal()
-  
 ```
+
+In this plot, the regression line reveals a positive relationship between the proportions of Native American population and households lacking plumbing. The outliers in the West (Apache County, McKinley County) greatly influence the linear relationship. Propotion of Native Americans in county population is a heavily skewed stat, so I would be curious to investigate differences with other demographics or differences between only counties with high Native American populations.
 
 Sources: Azadpour, Elmera and Nell, Cee, 2024, "Mapping water insecurity in R with tidycensus," USGS, https://waterdata.usgs.gov/blog/acs-maps/
 

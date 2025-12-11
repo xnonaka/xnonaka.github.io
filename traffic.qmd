@@ -3,9 +3,10 @@ title: "Daily England Traffic"
 description: "Analysis of average highway vehicle speed throughout the day in England from TidyTuesday"
 author: Xander Nonaka
 date: September 24, 2025 
-format: html
+format: 
+  html:
+    code-fold: TRUE
 execute:
-  echo: false
   warning: false
   message: false
 ---
@@ -14,19 +15,21 @@ England National Highways Traffic Data Set
 
 The data set used in this plot contains speed and vehicle volume data captured throughout the day over the course of many days on different highway sites in England.
 
-```{r}
+```{r, echo = FALSE}
 library(tidyverse)
 library(dplyr)
 ```
 
-```{r}
+```{r, echo = FALSE}
 tuesdata <- tidytuesdayR::tt_load(2024, week = 49)
 
 A64_traffic <- tuesdata$A64_traffic
 ```
 
 ```{r}
-traffic <-A64_traffic %>% 
+#| label: traffic-plot
+#| fig-alt: "A line plot showing the mean traffic speed in England throughout the day."
+traffic <- A64_traffic %>% 
   group_by(`Time Interval`) %>% 
   summarize(avg_speed = mean(`Avg mph`, na.rm=TRUE)) %>% 
   arrange(desc(avg_speed))

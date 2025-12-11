@@ -10,7 +10,7 @@ execute:
   message: false
 ---
 
-```{r}
+```{r, echo - FALSE}
 library(DBI)
 library(ggplot2)
 library(tidyverse)
@@ -31,8 +31,8 @@ con_traffic <- DBI::dbConnect(
 
 I investigate trends in traffic/pedestrian stop data from my hometown of San Francisco. The first analyses I did was frequency throughout the day. I sought to visualize the trends over the course of the day by grouping by time and plotting each count. The time for each stop was marked with the hour and minute (seconds not specified) for San Francisco, so I grouped by the time variable to count the frequency at each minute in the day.
 
-```{sql connection=con_traffic}
-DESCRIBE ca_san_francisco_2020_04_01
+```{sql connection=con_traffic, echo = FALSE}
+DESCRIBE ca_oakland_2020_04_01
 ```
 
 ```{sql connection = con_traffic}
@@ -45,13 +45,15 @@ ORDER BY time;
 ```
 
 ```{r}
+#| fig-alt: "A scatter plot showing the count of traffic and pedestrian stops at each minute in the day in San Francisco." 
 time_table %>% 
   ggplot(aes(x = time, y = num_stops)) +
   geom_point() +
   labs(x = "Time", 
        y = "Number of Stops", 
-       title = "Number of stops throughout day")
+       title = "Number of stops throughout day in San Francisco")
 ```
+
 ```{sql connection = con_traffic}
 #| output.var = "time_table8to10"
 SELECT time, COUNT(*) AS num_stops
@@ -60,115 +62,129 @@ WHERE time BETWEEN '8:00:00' AND '10:00:00'
 GROUP BY time 
 ORDER BY time;
 ```
+
 ```{r}
+#| fig-alt: "A scatter plot showing the count of traffic and pedestrian stops at each minute from 8:00AM to 10:00AM in San Francisco."
 time_table8to10 %>% 
   ggplot(aes(x = time, 
              y = num_stops, 
              color = minute(time) %in% c(0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55))) +
   geom_point() +
-  theme(legend.position = "none")
+  theme(legend.position = "none") +
   labs(x = "Time", 
        y = "Number of Stops", 
        title = "Number of stops from 8AM to 10AM")
 ```
 
-Based on the plot of counts at each minute, there is an evident discrepancy in the time data. Upon observing the data, it is clear that for minute multiples of 5 (and especially 10) the count spikes (i.e. 1:30 much higher than 1:29 and 1:31). This can be viewed in the second plot (stop frequency from 8AM to 10AM), where times every 5 minute are blue. It follows that when an individual traffic stop is recorded, the time of day is often rounded to the nearest regular 5th minute. 
+Based on the plot of counts at each minute, there is an evident discrepancy in the time data. Upon observing the data, it is clear that for minute multiples of 5 (and especially 10) the count spikes (i.e. 1:30 much higher than 1:29 and 1:31). This can be viewed in the second plot (stop frequency from 8AM to 10AM), where times every 5 minute are blue. It follows that when an individual traffic stop is recorded, the time of day is often rounded to the nearest regular 5th minute. To account for this, I grouped data by rounding each time down to the hour. I include data from the three Bay Area data sets (San Francisco, Oakland, and San Jose).
 
-```{r}
-time_table5 <- time_table %>% 
-  mutate(time10 = floor_date(time, unit = "5 minutes")) %>% 
-  group_by(time10) %>% 
-  summarize(num_stops = sum(num_stops))
-time_table5 %>% 
-  ggplot(aes(x = time, y = num_stops)) + 
-  geom_point() +
-  geom_smooth() +
-  labs(x = "Time", 
-       y = "Number of Stops", 
-       title = "Number of Stops (Every 5th minute)")
+```{sql connection = con_traffic}
+#| output.var = "bay_total"
+SELECT COUNT(*) AS num_stops, HOUR(time) AS hour, "San Francisco" AS city
+FROM ca_san_francisco_2020_04_01
+GROUP BY hour 
+
+
+UNION ALL 
+
+SELECT COUNT(*) AS num_stops, HOUR(time) AS hour, "Oakland" AS city 
+FROM ca_oakland_2020_04_01
+GROUP BY hour 
+
+
+UNION ALL
+
+SELECT COUNT(*) AS num_stops, HOUR(time) AS hour, "San Jose" AS city 
+FROM ca_san_jose_2020_04_01
+GROUP BY hour;
 ```
 
-There is still some short-term variation and spikes, but it is easier to observe a trend using the geom_smooth line. There is a clear drop in the early morning after 12AM, before the count begins to rise again around 5AM. This is likely when the number of cars on the road starts to increase. The count increases throughout the day, with the slope decreasing gradually after 10AM (before seemingly increasing slightly in the evening).
+```{r}
+#| fig-alt: "A line chart showing the count of traffic and pedestrian stops in hour intervals throughout the day in San Francisco, Oakland, and San Jose."
+bay_total %>% 
+  ggplot(aes(
+    x = hour,
+    y = num_stops, 
+    color = city 
+  )) +
+  geom_line() +
+  geom_point() +
+  labs(x = "Time of Day", 
+       y = "Total Stops", 
+       title = "Total Stops throughout the Day") +
+  theme_minimal()
+```
+
+San Francisco has substantially more stops, with greater variation during the day. There is a clear drop in the early morning after 12AM, before the count begins to rise again around 6AM. This is likely when the number of cars on the road starts to increase. The count increases until around 9AM, where the points fluctuate but remain relatively steady until an increase at around 4PM. The count peaks around 5-6PM, and decreases until around 9PM when it rises again. The stop counts in San Jose and Oakland follow similar patterns during the day. They seem to match (similar to San Francisco) commute patterns by rising in the morning from 5 until 9, and rising again in the afternoon.
+
+Mean of hourly stop count
+
+```{r}
+bay_total %>% 
+  group_by(city) %>% 
+  summarize(mean = mean(num_stops))
+```
 
 ```{sql connection=con_traffic}
 #| output.var = "bay_table"
-SELECT time, SUM(arrest_made) AS num_arrests, "San Francisco" AS city 
+
+SELECT HOUR(time) AS hour, SUM(arrest_made) AS num_arrests, "San Francisco" AS city, (SUM(arrest_made)/COUNT(*)) * 100 AS arrest_perc
 FROM ca_san_francisco_2020_04_01
-GROUP BY time
+WHERE time IS NOT NULL 
+GROUP BY hour
 
 
 UNION ALL
 
-SELECT time, SUM(arrest_made) AS num_arrests, "Oakland" AS city 
+SELECT HOUR(time) AS hour, SUM(arrest_made) AS num_arrests, "Oakland" AS city, (SUM(arrest_made)/COUNT(*)) * 100 AS arrest_perc 
 FROM ca_oakland_2020_04_01
-GROUP BY time
+WHERE time IS NOT NULL
+GROUP BY hour
 
 
 UNION ALL
 
-SELECT time, SUM(arrest_made) AS num_arrests, "San Jose" AS city 
+SELECT HOUR(time) as hour, SUM(arrest_made) AS num_arrests, "San Jose" AS city, (SUM(arrest_made)/COUNT(*)) * 100 AS arrest_perc 
 FROM ca_san_jose_2020_04_01
-GROUP BY time
-
-ORDER BY time, city  
-```
-
-```{sql connection=con_traffic}
-#| output.var = "weekend_table"
-SELECT time, COUNT(*) AS num_stops, DAYNAME(date) AS wday 
-FROM ca_san_francisco_2020_04_01
-GROUP BY time, DAYNAME(date)
-HAVING wday IN ("Friday", "Saturday", "Sunday")
+WHERE time IS NOT NULL
+GROUP BY hour;
 ```
 
 ```{r}
-weekend_table1 <- weekend_table %>% 
-  filter(!is.na(time)) %>% 
-  filter(!is.na(wday)) %>% 
-  filter(minute(time) %in% c(0, 30))
-weekend_table1 %>% 
-  ggplot(aes(x = time, y = num_stops, color = wday)) + 
+#| fig-alt: "A line chart showing the percent of stops that end in an arrest in hour intervals throughout the day in San Francisco, Oakland, and San Jose."
+bay_table %>% 
+  ggplot(aes(
+    x = hour,
+    y = arrest_perc, 
+    color = city 
+  )) +
+  geom_line() +
   geom_point() +
-  geom_smooth() +
-  labs(x = "Time", 
-       y = "Number of Stops", 
-       title = "Number of Stops (Every 30th minute)")
+  labs(x = "Time of Day", 
+       y = "% Arrest Made", 
+       title = "Percent of Stops Ending with Arrest") +
+  theme_minimal()
 ```
 
-In this graph I isolate the data from Fridays, Saturdays and Sundays. To simplify the plot and reduce additional data collection variability, I filter for the stops only from either on the hour or half past. It seems that Friday has a higher number of stops from around 4AM to after 8PM. Sunday has substantially fewer stops in the evening, with the difference only growing later into the night. Interestingly, the positions at the end of the plot are vastly different than the beginning of the plot, though I'm not sure of a possible explaination.
+This plot use data from the three Bay Area data sets to show the percent of stops that end in an arrest at each hour during the day. Data points were grouped using the hour() function to round the time down to the nearest hour. Patterns across time vary between the cities. San Francisco has relatively a constant low arrest made% througout the whole day. On the other hand, Oakland has much higher arrest/total stops values throughout the day, peaking at 5 to 7AM. San Jose has lower rates than Oakland for most of the day, but is higher around its peak from 9 to 11 AM. This could reflect different policing patterns and crime patterns in different cities during the day.
 
-I was also curious to analyze traffic stop data based on race for young adults. To make additional comparison, I added the data set from Oakland. I filtered the data to include just the stops where the subject was under 25 years old.
-
-```{sql connection=con_traffic}
-#| output.var = "table3"
-SELECT subject_race, COUNT(*) AS num_stops, "San Francisco" AS city 
-FROM ca_san_francisco_2020_04_01
-WHERE subject_age < 25
-GROUP BY subject_race
-
-UNION 
-
-SELECT subject_race, COUNT(*) AS num_stops, "Oakland" AS city 
-FROM ca_oakland_2020_04_01
-WHERE subject_age < 25
-GROUP BY subject_race
-
-ORDER BY num_stops DESC 
-```
+Mean of hourly arrest%
 
 ```{r}
-table3 %>% 
-  group_by(subject_race) 
-table3 %>% 
+bay_table %>% 
   group_by(city) %>% 
-  summarize(sum(num_stops))
+  summarize(mean = mean(arrest_perc))
 ```
 
-In the 25 and under data for both cities, Black young adults are disproportionately the subjects of traffic/pedestrian stops. They made up 22% of stops in San Francisco despite making up only 5-6% of the city's population, and over half of stops in Oakland despite making up only 20% of the population. In Oakland, the white population makes up about a quarter of the city, but only 4% of young adults stopped in Oakland were white.
+The low percentage for San Francisco could be because of its much higher traffic stop count. Stricter guidelines for traffic and pedestrian stops may lead to a much higher enforcement of smaller infractions that do not necessarily end in an arrest. Oakland and San Jose may only focus on stopping more serious infractions, potentially due to administrative and resource limitations and greater area to cover.
+
+Another potential issue could be reporting, where stops with no reported infraction are not officially recorded. [This video](https://www.youtube.com/watch?v=mPLxsv4IrUw) reports on Oakland's low clearance rate (arrests/reported crimes) and problems with data collection. The low clearance rate for reported crimes contrasts with the high rate of arrests made per stop from my analysis, but traffic stop arrests and reported crime arrests are different. These issues may lead to limited effort on minor traffic/pedestrian infractions, causing stops ending in arrests to take up a larger proportion.
 
 References
 
 E. Pierson, C. Simoiu, J. Overgoor, S. Corbett-Davies, D. Jenson, A. Shoemaker, V. Ramachandran, P. Barghouty, C. Phillips, R. Shroff, and S. Goel. “A large-scale analysis of racial disparities in police stops across the United States”. Nature Human Behaviour, Vol. 4, 2020.
+
+ABC7 News Bay Area, "Oakland PD's inaccurate crime reporting leads to questions about what's going on in city". Youtube, 2024. <https://www.youtube.com/watch?v=mPLxsv4IrUw>
 
 ```{r, include=FALSE}
 dbDisconnect(con_traffic)

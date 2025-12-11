@@ -143,16 +143,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="./traffic.html">
  <span class="dropdown-text">Highway Traffic</span></a>
   </li>  
-        <li>
-    <a class="dropdown-item" href="./project2.html">
- <span class="dropdown-text">Shakespeare Text</span></a>
-  </li>  
-        <li>
-    <a class="dropdown-item" href="./project3.html">
- <span class="dropdown-text">Penguin Permutation</span></a>
-  </li>  
     </ul>
   </li>
+  <li class="nav-item">
+    <a class="nav-link active" href="./project2.html" aria-current="page"> 
+<span class="menu-text">Shakespeare Text Analysis</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./project3.html"> 
+<span class="menu-text">Penguin Permutation</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./project4.html"> 
+<span class="menu-text">Data Ethics</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./project5.html"> 
+<span class="menu-text">Traffic Stop Data</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./DSPres.html"> 
+<span class="menu-text">Final Presentation</span></a>
+  </li>  
 </ul>
           </div> <!-- /navcollapse -->
             <div class="quarto-navbar-tools">
@@ -254,12 +266,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>)) <span class="sc">+</span></span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">"Play"</span>,</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">y=</span><span class="st">"Word Count"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">y=</span><span class="st">"Word Count"</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Light and Dark Word Counts"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="project2_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="project2_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" alt="A bar chart with counts of light and dark words in Hamlet, Macbeth, and Romeo and Juliet." width="672"></p>
 </figure>
 </div>
 </div>
@@ -314,7 +327,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 20 can             4</code></pre>
 </div>
 </div>
-<p>This table shows the most common words following “I” in Hamlet. My goal was to idenfity the most common verbs from the play, and see if any uncommon or unexpected ones occur often. Shakespeare obviously used many words that are not widely used or understood anymore, but all of the most common verbs were very standard to today’s English. One drawback from my code is I was only able to extract the words following the first “I” in a single line (so if I was used twice, it didn’t extract the next word to add to the count).</p>
+<p>This table shows the most common words following “I” in Hamlet. My goal was to identify the most common verbs from the play, and see if any uncommon or unexpected ones occur often. Shakespeare obviously used many words that are not widely used or understood anymore, but all of the most common verbs were very standard to today’s English. One drawback from my code is I was only able to extract the words following the first “I” in a single line (so if I was used twice, it didn’t extract the next word to add to the count).</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -387,9 +400,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>romeo_juliet_df<span class="sc">$</span>word <span class="ot">&lt;-</span> <span class="fu">factor</span>(romeo_juliet_df<span class="sc">$</span>word, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"love"</span>, <span class="st">"hate"</span>, <span class="st">"life"</span>, <span class="st">"death"</span>, <span class="st">"heaven"</span>, <span class="st">"hell"</span>))</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>hamlet_df<span class="sc">$</span>word <span class="ot">&lt;-</span> <span class="fu">factor</span>(hamlet_df<span class="sc">$</span>word, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"love"</span>, <span class="st">"hate"</span>, <span class="st">"life"</span>, <span class="st">"death"</span>, <span class="st">"heaven"</span>, <span class="st">"hell"</span>))</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>macbeth_df<span class="sc">$</span>word <span class="ot">&lt;-</span> <span class="fu">factor</span>(macbeth_df<span class="sc">$</span>word, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"love"</span>, <span class="st">"hate"</span>, <span class="st">"life"</span>, <span class="st">"death"</span>, <span class="st">"heaven"</span>, <span class="st">"hell"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>romeo_juliet_df <span class="ot">&lt;-</span> romeo_juliet_df <span class="sc">%&gt;%</span> </span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">word =</span> <span class="fu">fct_relevel</span>(word, <span class="st">"love"</span>, <span class="st">"hate"</span>, <span class="st">"life"</span>, <span class="st">"death"</span>, <span class="st">"heaven"</span>, <span class="st">"hell"</span>))</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>hamlet_df <span class="ot">&lt;-</span> hamlet_df <span class="sc">%&gt;%</span> </span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">word =</span> <span class="fu">fct_relevel</span>(word, <span class="st">"love"</span>, <span class="st">"hate"</span>, <span class="st">"life"</span>, <span class="st">"death"</span>, <span class="st">"heaven"</span>, <span class="st">"hell"</span>))</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>macbeth_df <span class="ot">&lt;-</span> macbeth_df <span class="sc">%&gt;%</span> </span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">word =</span> <span class="fu">fct_relevel</span>(word, <span class="st">"love"</span>, <span class="st">"hate"</span>, <span class="st">"life"</span>, <span class="st">"death"</span>, <span class="st">"heaven"</span>, <span class="st">"hell"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <div class="cell">
@@ -404,7 +420,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="project2_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="project2_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" alt="A bar chart showing the counts of opposite word pairs in Romeo and Juliet." width="672"></p>
 </figure>
 </div>
 </div>
@@ -421,7 +437,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="project2_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="project2_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" alt="A bar chart showing the counts of opposite word pairs in Hamlet." width="672"></p>
 </figure>
 </div>
 </div>
@@ -438,17 +454,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="project2_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="project2_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" alt="A bar chart showing the counts of opposite word pairs in Macbeth." width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>I wanted to expand on the first plot’s theme of opposite word frequency. I identified three word pairs to count using the detect function, and plotted the distribution for all three plays. The highest total for any word is “love” in Romeo and Juliet, which makes sense. The play also favors “death” to “life” much more heavily than the other two plays. Life and death are split equally in Macbeth (and both slightly higher than “love”). “Hate” doesn’t seem to be as common a word for Shakespeare.</p>
-<p>Sources: TidyTuesday: https://github.com/rfordatascience/tidytuesday/blob/main/data/2024/2024-09-17/readme.md</p>
-<p>Data: Massachussetts Institute of Technology, “The Complete Works of William Shakespeare” https://shakespeare.mit.edu/</p>
-<p>Shakespeare, “Hamlet” https://shakespeare.mit.edu/hamlet/</p>
-<p>Shakespeare, “Macbeth” https://shakespeare.mit.edu/macbeth/</p>
-<p>Shakespeare, “Romeo and Juliet” https://shakespeare.mit.edu/romeo_juliet/</p>
+<p>Sources:</p>
+<p>Data: Massachussetts Institute of Technology, “The Complete Works of William Shakespeare” <a href="https://shakespeare.mit.edu/" class="uri">https://shakespeare.mit.edu/</a></p>
+<p>Shakespeare, William, “Hamlet” <a href="https://shakespeare.mit.edu/hamlet/" class="uri">https://shakespeare.mit.edu/hamlet/</a></p>
+<p>Shakespeare, William, “Macbeth” <a href="https://shakespeare.mit.edu/macbeth/" class="uri">https://shakespeare.mit.edu/macbeth/</a></p>
+<p>Shakespeare, William, “Romeo and Juliet” <a href="https://shakespeare.mit.edu/romeo_juliet/" class="uri">https://shakespeare.mit.edu/romeo_juliet/</a></p>
+<p>TidyTuesday: <a href="https://github.com/rfordatascience/tidytuesday/blob/main/data/2024/2024-09-17/readme.md" class="uri">https://github.com/rfordatascience/tidytuesday/blob/main/data/2024/2024-09-17/readme.md</a></p>
 
 
 
